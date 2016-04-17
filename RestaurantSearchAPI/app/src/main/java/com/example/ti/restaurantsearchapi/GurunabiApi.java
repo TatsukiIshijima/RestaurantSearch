@@ -16,9 +16,10 @@ public class GurunabiApi {
 
     private static final String API_ENDPOINT = "http://api.gnavi.co.jp/RestSearchAPI/20150630/";
 
-    public static RestSearch getRestaurant(String lat, String lon, int range, String freeword) throws IOException ,JSONException {
+    public static RestSearch getRestaurant(String lat, String lon, int range, String freeword,
+                                           String lunch, String bottom, String buffet, String parking, String no_smoking) throws IOException ,JSONException {
 
-        String accekey = "************************";
+        String accekey = "0f3f1f4732b567e82bb1ebdfc5cebb3d";
         String format = "json";
         int hit_per_page = 10;
         int offset_page = 1;
@@ -26,13 +27,18 @@ public class GurunabiApi {
         String prmKeyid = "?keyid=" + accekey;
         String prmFormat = "&format=" + format;
         String prmLat = "&latitude=" + lat;
-        String  prmLon = "&longitude=" + lon;
+        String prmLon = "&longitude=" + lon;
         String prmHit_per_page = "&hit_per_page=" + hit_per_page;
         String prmoffset_page = "&offset_page=" + offset_page;
         String prmrange = "&range=" + range;
         String prmfreeword = "&freeword=" + freeword;
+        String prmlunch = "&lunch=" + lunch;
+        String prmbottle = "&bottomless_cup=" + bottom;
+        String prmbuffet = "&buffet=" + buffet;
+        String prmparking = "&parking=" + parking;
+        String prmsmoking = "&no_smoking==" + no_smoking;
 
-        URL url = new URL(API_ENDPOINT + prmKeyid + prmFormat + prmLat + prmLon+prmHit_per_page + prmoffset_page+prmrange + prmfreeword);
+        URL url = new URL(API_ENDPOINT + prmKeyid + prmFormat + prmLat + prmLon + prmHit_per_page + prmoffset_page + prmrange + prmfreeword + prmlunch + prmbottle + prmbuffet + prmparking + prmsmoking);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
         StringBuilder sb = new StringBuilder();

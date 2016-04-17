@@ -3,6 +3,7 @@ package com.example.ti.restaurantsearchapi;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -74,9 +75,22 @@ public class RestlistActivity extends AppCompatActivity {
 
         total_hit_count = (TextView) findViewById(R.id.total_count);
         restlistview = (ListView) this.findViewById(R.id.listView);
-        // 検索ワードを受け取る
+        // 検索ワード 範囲を受け取る
         Intent intent = getIntent();
         String freeword = intent.getStringExtra("FreeWord");
+        int range_number = intent.getIntExtra("range", 1);
+        // 4/17 ここが全部Nullのため結果が出てこない
+        int lunch = intent.getIntExtra("lunch", 0);
+        int bottom = intent.getIntExtra("bottom", 0);
+        int buffet = intent.getIntExtra("buffet", 0);
+        int parking = intent.getIntExtra("parking", 0);
+        int smoking = intent.getIntExtra("smoking", 0);
+
+        Log.d("ConditionLunch:", String.valueOf(lunch));
+        Log.d("ConditionBottom:" , String.valueOf(bottom));
+        Log.d("ConditionBuffet:" , String.valueOf(buffet));
+        Log.d("ConditionParking:" , String.valueOf(parking));
+        Log.d("ConditionSmoking:" , String.valueOf(smoking));
 
         // 検索ワードの全角コンマを半角コンマへ変換
         //freeword.replaceAll("，", ",");
@@ -96,7 +110,8 @@ public class RestlistActivity extends AppCompatActivity {
         restlistview.setAdapter(adapter);
 
         progress = (ProgressBar) findViewById(R.id.progress);
-        new ApiTask().execute("35.670082", "139.763267", String.valueOf(1), freeword);
+        new ApiTask().execute("35.670082", "139.763267", String.valueOf(range_number), freeword,
+                String.valueOf(lunch), String.valueOf(bottom), String.valueOf(buffet), String.valueOf(parking), String.valueOf(smoking));
 
         // リスト項目がクリックされた時
         restlistview.setOnItemClickListener(new AdapterView.OnItemClickListener() {

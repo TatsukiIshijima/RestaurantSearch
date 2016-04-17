@@ -15,7 +15,8 @@ public class GetRestaurantTask extends AsyncTask<String, Void, RestSearch> {
     @Override
     protected RestSearch doInBackground(String... params) {
         try {
-            return GurunabiApi.getRestaurant(params[0], params[1], Integer.parseInt(params[2]), params[3]);
+            return GurunabiApi.getRestaurant(params[0], params[1], Integer.parseInt(params[2]), params[3],
+                    params[4], params[5], params[6], params[7], params[8]);
         } catch (IOException | JSONException e) {
             exception = e;
         }
