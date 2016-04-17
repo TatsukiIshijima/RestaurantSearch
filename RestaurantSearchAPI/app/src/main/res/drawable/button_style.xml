@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- ボタンが押されていないとき -->
+    <item android:state_pressed="false">
+        <shape android:shape="rectangle">
+            <!-- 背景色 -->
+            <solid android:color="@color/gainsboro"/>
+            <!-- 角の丸み -->
+            <corners android:radius="6dp"/>
+            <!-- 枠線 -->
+            <stroke android:width="3px" android:color="#CCCCCC"/>
+        </shape>
+    </item>
+
+    <!-- ボタンが押された時 -->
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <!-- 背景色 -->
+            <solid android:color="@color/gray"/>
+            <!-- 角の丸み -->
+            <corners android:radius="6dp"/>
+            <!-- 枠線 -->
+            <stroke android:width="3px" android:color="#CCCCCC"/>
+        </shape>
+    </item>
+
+</selector>
