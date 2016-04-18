@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -41,8 +42,9 @@ public class ListImageDownloadTask extends AsyncTask<String, Void, Bitmap> {
     protected void onPostExecute(Bitmap result) {
         if (result != null) {
             // 画像サイズ変更
-            Bitmap bitmap2 = Bitmap.createScaledBitmap(result, 80, 60, false);
+            Bitmap bitmap2 = Bitmap.createScaledBitmap(result, 100, 75, false);
             imageView.setImageBitmap(bitmap2);
+            imageView.setVisibility(View.VISIBLE);
             Log.d("DownLoadImage:", "画像セット");
         }
     }

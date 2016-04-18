@@ -194,8 +194,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
             // Tagでpositionの設定
             sw.setTag(position);
 
-            //final ListView list = (ListView) parent;
-
             sw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -210,16 +208,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                     }
                 }
             });
-            /*
-            sw.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    AdapterView.OnItemClickListener listener = list.getOnItemClickListener();
-                    long id = getItemId(position);
-                    listener.onItemClick((AdapterView<?>) parent, v, position, id);
-                }
-            });
-            */
             return view;
         }
     }

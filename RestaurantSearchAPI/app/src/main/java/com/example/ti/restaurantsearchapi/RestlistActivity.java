@@ -105,13 +105,13 @@ public class RestlistActivity extends AppCompatActivity {
         //Toast.makeText(getApplication(), "FreeWord'" + freeword + "'", Toast.LENGTH_SHORT).show();
 
         // アダプター生成
-        SimpleAdapter adapter = new SimpleAdapter(this, restlist, R.layout.restlist_item,
-                new String[] {"name", "access"},
-                new int[] {R.id.restName, R.id.restAccess});
+        //SimpleAdapter adapter = new SimpleAdapter(this, restlist, R.layout.restlist_item,
+        //        new String[] {"name", "access"},
+        //        new int[] {R.id.restName, R.id.restAccess});
         // 画像つきアダプター生成
         ImageListAdapter Imgadapter = new ImageListAdapter(this, restlist, R.layout.restlist_item,
-                new String[] {"name", "access"},
-                new int[] {R.id.restName, R.id.restAccess});
+                new String[] {},
+                new int[] {});
         // アダプターセット
         restlistview.setAdapter(Imgadapter);
 
@@ -180,7 +180,7 @@ public class RestlistActivity extends AppCompatActivity {
 
             TextView rest_name_text = (TextView) view.findViewById(R.id.restName);
             TextView access_text = (TextView) view.findViewById(R.id.restAccess);
-            TextView img_url_text = (TextView) view.findViewById(R.id.rest_img_url);
+            //TextView img_url_text = (TextView) view.findViewById(R.id.rest_img_url);
             ImageView imageView = (ImageView) view.findViewById(R.id.rest_image);
 
             // 画像URLが存在するとき
@@ -199,13 +199,13 @@ public class RestlistActivity extends AppCompatActivity {
                 Resources res = getResources();
                 Bitmap bitmap1 = BitmapFactory.decodeResource(res, R.drawable.no_image);
                 // 画像のサイズ変更する
-                Bitmap bitmap2 = Bitmap.createScaledBitmap(bitmap1, 80, 60, false);
+                Bitmap bitmap2 = Bitmap.createScaledBitmap(bitmap1, 100, 75, false);
                 imageView.setImageBitmap(bitmap2);
             }
 
             rest_name_text.setText(rest_name);
             access_text.setText(access);
-            img_url_text.setText(img_url);
+            //img_url_text.setText(img_url);
             return view;
         }
     }
