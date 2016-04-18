@@ -18,13 +18,21 @@
         android:textSize="24dp"
         android:textColor="@color/colorAccent"/>
 
+    <ProgressBar
+        android:id="@+id/progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/shop_name"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="30dp"/>
+
     <ImageView
         android:id="@+id/shop_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/shop_name"
         android:padding="5dp"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true" />
 
     <TextView
         android:id="@+id/address"

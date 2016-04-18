@@ -7,17 +7,24 @@ import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.util.Linkify;
+import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 /* レストラン詳細画面 */
 
 public class RestaurantActivity extends AppCompatActivity {
 
+    private ProgressBar progressBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_restaurant);
+
+        progressBar = (ProgressBar) findViewById(R.id.progress);
 
         // 値を受け取る
         Intent intent = getIntent();
@@ -54,12 +61,17 @@ public class RestaurantActivity extends AppCompatActivity {
         // 画像URLが存在するとき
         if (!image_url.equals("")) {
             // 画像のダウンロード
-            DownloadImageTask task = new DownloadImageTask(imageView);
-            task.execute(image_url);
+            try {
+                DownloadImageTask task = new DownloadImageTask(imageView, progressBar);
+                task.execute(image_url);
+            } catch (Exception e) {
+                Log.d("Error:", "画像ダウンロードで例外発生");
+            }
 
         // 画像URLが存在しないとき
         // NoImage画像表示
         } else {
+            progressBar.setVisibility(View.GONE);
             Resources res = getResources();
             Bitmap bitmap1 = BitmapFactory.decodeResource(res, R.drawable.no_image);
             // 画像のサイズ変更する

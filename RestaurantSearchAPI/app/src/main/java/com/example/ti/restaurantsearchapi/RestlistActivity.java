@@ -1,12 +1,19 @@
 package com.example.ti.restaurantsearchapi;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
@@ -15,7 +22,9 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /* レストラン一覧画面 */
 
@@ -99,8 +108,12 @@ public class RestlistActivity extends AppCompatActivity {
         SimpleAdapter adapter = new SimpleAdapter(this, restlist, R.layout.restlist_item,
                 new String[] {"name", "access"},
                 new int[] {R.id.restName, R.id.restAccess});
+        // 画像つきアダプター生成
+        ImageListAdapter Imgadapter = new ImageListAdapter(this, restlist, R.layout.restlist_item,
+                new String[] {"name", "access"},
+                new int[] {R.id.restName, R.id.restAccess});
         // アダプターセット
-        restlistview.setAdapter(adapter);
+        restlistview.setAdapter(Imgadapter);
 
         progress = (ProgressBar) findViewById(R.id.progress);
         // URLをたたく
@@ -135,5 +148,65 @@ public class RestlistActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    // 画像つきリストアダプタ
+    public class ImageListAdapter extends SimpleAdapter {
+
+        private List<? extends  Map<String, Object>> list_data;
+        private Context context;
+        private LayoutInflater mInflater;
+
+        public ImageListAdapter(Context context, List<? extends Map<String, Object>> data, int resource, String[] from, int[] to) {
+            super(context, data, resource, from, to);
+            this.list_data = data;
+            this.context = context;
+
+            this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view = convertView;
+            if (view == null) {
+                view = mInflater.inflate(R.layout.restlist_item, null);
+            }
+
+            // 行にあるデータ読み込み
+            Map<String, Object> data_row = list_data.get(position);
+            String rest_name = data_row.get("name").toString();                                    // 店舗名
+            String access = data_row.get("access").toString();                                    // アクセス
+            String img_url = data_row.get("image_url").toString();                               // 店舗画像
+
+            TextView rest_name_text = (TextView) view.findViewById(R.id.restName);
+            TextView access_text = (TextView) view.findViewById(R.id.restAccess);
+            TextView img_url_text = (TextView) view.findViewById(R.id.rest_img_url);
+            ImageView imageView = (ImageView) view.findViewById(R.id.rest_image);
+
+            // 画像URLが存在するとき
+            if (!img_url.equals("")) {
+                // 画像のダウンロード
+                try {
+                    ListImageDownloadTask task = new ListImageDownloadTask(imageView);
+                    task.execute(img_url);
+                } catch (Exception e) {
+                    Log.d("Error:", "画像ダウンロードで例外発生");
+                }
+
+                // 画像URLが存在しないとき
+                // NoImage画像表示
+            } else {
+                Resources res = getResources();
+                Bitmap bitmap1 = BitmapFactory.decodeResource(res, R.drawable.no_image);
+                // 画像のサイズ変更する
+                Bitmap bitmap2 = Bitmap.createScaledBitmap(bitmap1, 80, 60, false);
+                imageView.setImageBitmap(bitmap2);
+            }
+
+            rest_name_text.setText(rest_name);
+            access_text.setText(access);
+            img_url_text.setText(img_url);
+            return view;
+        }
     }
 }
