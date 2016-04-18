@@ -41,10 +41,26 @@ public class RestSearch {
             name = jsonObject.getString("name");
             access = new Access(jsonObject.getJSONObject("access"));
             image_url = new Image_url(jsonObject.getJSONObject("image_url"));
-            address = jsonObject.getString("address");
-            tel = jsonObject.getString("tel");
-            opentime = jsonObject.getString("opentime");
-            url = jsonObject.getString("url");
+            if (!jsonObject.getString("address").equals("{}")) {
+                address = jsonObject.getString("address");
+            } else {
+                address = "";
+            }
+            if (!jsonObject.getString("tel").equals("{}")) {
+                tel = jsonObject.getString("tel");
+            } else {
+                tel = "";
+            }
+            if (!jsonObject.getString("opentime").equals("{}")) {
+                opentime = jsonObject.getString("opentime");
+            } else {
+                opentime = "";
+            }
+            if (!jsonObject.getString("url").equals("{}")) {
+                url = jsonObject.getString("url");
+            } else {
+                url = "";
+            }
         }
     }
 
@@ -56,30 +72,30 @@ public class RestSearch {
         public final String note;
 
         public Access(JSONObject jsonObject) throws  JSONException {
-            if (!jsonObject.isNull("line")) {
+            if (!jsonObject.getString("line").equals("{}")) {
                 line = jsonObject.getString("line");
             } else {
-                line = null;
+                line = "";
             }
-            if (!jsonObject.isNull("station")) {
+            if (!jsonObject.getString("station").equals("{}")) {
                 station = jsonObject.getString("station");
             } else {
-                station = null;
+                station = "";
             }
-            if (!jsonObject.isNull("station_exit")) {
+            if (!jsonObject.getString("station_exit").equals("{}")) {
                 station_exit = jsonObject.getString("station_exit");
             } else {
-                station_exit = null;
+                station_exit = "";
             }
-            if (!jsonObject.isNull("walk")) {
+            if (!jsonObject.getString("walk").equals("{}")) {
                 walk = jsonObject.getString("walk");
             } else {
-                walk = null;
+                walk = "";
             }
-            if (!jsonObject.isNull("note")) {
+            if (!jsonObject.getString("note").equals("{}")) {
                 note = jsonObject.getString("note");
             } else {
-                note =null;
+                note = "";
             }
         }
     }
@@ -90,17 +106,17 @@ public class RestSearch {
         public final String qrcode;
 
         public Image_url(JSONObject jsonObject) throws JSONException {
-            if (!jsonObject.isNull("shop_image1")) {
+            if (!jsonObject.getString("shop_image1").equals("{}")) {
                 shop_image1 = jsonObject.getString("shop_image1");
             } else {
                 shop_image1 = null;
             }
-            if (!jsonObject.isNull("shop_image2")) {
+            if (!jsonObject.getString("shop_image2").equals("{}")) {
                 shop_image2 = jsonObject.getString("shop_image2");
             } else {
                 shop_image2 = null;
             }
-            if (!jsonObject.isNull("qrcode")) {
+            if (!jsonObject.getString("qrcode").equals("{}")) {
                 qrcode = jsonObject.getString("qrcode");
             } else {
                 qrcode = null;

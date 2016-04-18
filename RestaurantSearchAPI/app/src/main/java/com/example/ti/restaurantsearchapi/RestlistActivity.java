@@ -26,7 +26,6 @@ public class RestlistActivity extends AppCompatActivity {
     // 店リスト
     ArrayList<Map<String, Object>> restlist = new ArrayList<Map<String, Object>>();
     //SimpleAdapter adapter;
-    ArrayList<String> namelist = new ArrayList<String>();
 
     public class ApiTask extends GetRestaurantTask {
 
@@ -57,9 +56,6 @@ public class RestlistActivity extends AppCompatActivity {
 
                     // リストに追加
                     restlist.add(map);
-                    //namelist.add(rest.name);
-                    //total_hit_count.append("\n");
-                    //total_hit_count.append(rest.name);
                 }
             } else if (exception != null) {
                 Toast.makeText(getApplicationContext(), exception.getMessage(), Toast.LENGTH_SHORT).show();
@@ -97,11 +93,6 @@ public class RestlistActivity extends AppCompatActivity {
         //freeword.replaceAll("、", " ");
         //Toast.makeText(getApplication(), "FreeWord'" + freeword + "'", Toast.LENGTH_SHORT).show();
 
-        // ListViewの設定
-        // サンプル
-        //String[] sample = {"Windows", "Mac", "Unix", "Linux", "Android", "iOS"};
-        // 第2引数はレイアウト 第3引数は項目
-        //ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, namelist);
         // アダプター生成
         SimpleAdapter adapter = new SimpleAdapter(this, restlist, R.layout.restlist_item,
                 new String[] {"name", "access"},
@@ -110,6 +101,7 @@ public class RestlistActivity extends AppCompatActivity {
         restlistview.setAdapter(adapter);
 
         progress = (ProgressBar) findViewById(R.id.progress);
+        // URLをたたく
         new ApiTask().execute("35.670082", "139.763267", String.valueOf(range_number), freeword,
                 String.valueOf(lunch), String.valueOf(bottom), String.valueOf(buffet), String.valueOf(parking), String.valueOf(smoking));
 

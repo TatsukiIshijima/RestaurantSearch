@@ -1,9 +1,13 @@
 package com.example.ti.restaurantsearchapi;
 
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.util.Linkify;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class RestaurantActivity extends AppCompatActivity {
@@ -38,5 +42,12 @@ public class RestaurantActivity extends AppCompatActivity {
         tel_text.setText("TEL : " + tel);
         opentime_text.setText("営業時間 : " + opentime);
         url_text.setText("URL : " + url);
+
+        ImageView imageView = (ImageView) findViewById(R.id.shop_image);
+        Resources res = getResources();
+        Bitmap bitmap1 = BitmapFactory.decodeResource(res, R.drawable.no_image);
+        // 画像を縮小する
+        Bitmap bitmap2 = Bitmap.createScaledBitmap(bitmap1, 300, 225, false);
+        imageView.setImageBitmap(bitmap2);
     }
 }
