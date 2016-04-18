@@ -109,17 +109,17 @@ public class RestSearch {
             if (!jsonObject.getString("shop_image1").equals("{}")) {
                 shop_image1 = jsonObject.getString("shop_image1");
             } else {
-                shop_image1 = null;
+                shop_image1 = "";
             }
             if (!jsonObject.getString("shop_image2").equals("{}")) {
                 shop_image2 = jsonObject.getString("shop_image2");
             } else {
-                shop_image2 = null;
+                shop_image2 = "";
             }
             if (!jsonObject.getString("qrcode").equals("{}")) {
                 qrcode = jsonObject.getString("qrcode");
             } else {
-                qrcode = null;
+                qrcode = "";
             }
 
         }

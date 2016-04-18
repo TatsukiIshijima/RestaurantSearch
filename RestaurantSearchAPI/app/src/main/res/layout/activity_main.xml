@@ -9,6 +9,8 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.ti.restaurantsearchapi.MainActivity">
 
+    <!-- レストラン検索画面レイアウト -->
+
     <TextView
         android:id="@+id/freeword_title"
         android:layout_width="match_parent"

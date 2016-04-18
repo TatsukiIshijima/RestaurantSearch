@@ -4,6 +4,7 @@
     android:layout_height="match_parent">
 
     <!-- 絞り込み条件リストの行レイアウト -->
+
         <TextView
             android:id="@+id/condition_text"
             android:layout_width="wrap_content"

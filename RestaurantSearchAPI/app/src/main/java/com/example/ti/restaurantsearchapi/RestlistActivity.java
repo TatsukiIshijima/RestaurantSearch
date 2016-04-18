@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+/* レストラン一覧画面 */
+
 public class RestlistActivity extends AppCompatActivity {
 
     private TextView total_hit_count;
@@ -46,19 +48,20 @@ public class RestlistActivity extends AppCompatActivity {
                 for (RestSearch.Rest rest : data.restList) {
                     // Mapに各項目追加
                     Map map = new HashMap();
-                    map.put("name", rest.name);
+                    map.put("name", rest.name);                                                                // 店舗名
                     map.put("access", rest.access.line + rest.access.station +
-                            "\n" + rest.access.station_exit + "から" + rest.access.walk + "分");
-                    map.put("address", rest.address);
-                    map.put("tel", rest.tel);
-                    map.put("opentime", rest.opentime);
-                    map.put("url", rest.url);
+                            "\n" + rest.access.station_exit + "から" + rest.access.walk + "分");          // アクセス
+                    map.put("address", rest.address);                                                         // 住所
+                    map.put("tel", rest.tel);                                                                  // 電話番号
+                    map.put("opentime", rest.opentime);                                                      // 営業時間
+                    map.put("url", rest.url);                                                                  // URL
+                    map.put("image_url", rest.image_url.shop_image1);                                      // 店舗画像URL
 
                     // リストに追加
                     restlist.add(map);
                 }
             } else if (exception != null) {
-                Toast.makeText(getApplicationContext(), exception.getMessage(), Toast.LENGTH_SHORT).show();
+                total_hit_count.setText("検索ヒット数 : " + 0);
                 Toast.makeText(getApplicationContext(), "検索結果なし", Toast.LENGTH_LONG).show();
             }
         }
@@ -71,16 +74,15 @@ public class RestlistActivity extends AppCompatActivity {
 
         total_hit_count = (TextView) findViewById(R.id.total_count);
         restlistview = (ListView) this.findViewById(R.id.listView);
-        // 検索ワード 範囲を受け取る
+        // 値を受け取る
         Intent intent = getIntent();
-        String freeword = intent.getStringExtra("FreeWord");
-        int range_number = intent.getIntExtra("range", 1);
-        // 4/17 ここが全部Nullのため結果が出てこない
-        int lunch = intent.getIntExtra("lunch", 0);
-        int bottom = intent.getIntExtra("bottom", 0);
-        int buffet = intent.getIntExtra("buffet", 0);
-        int parking = intent.getIntExtra("parking", 0);
-        int smoking = intent.getIntExtra("smoking", 0);
+        String freeword = intent.getStringExtra("FreeWord");                                      // 検索ワード 範囲を受け取る
+        int range_number = intent.getIntExtra("range", 1);                                        // 検索範囲
+        int lunch = intent.getIntExtra("lunch", 0);                                               // ランチ営業
+        int bottom = intent.getIntExtra("bottom", 0);                                             // 飲み放題
+        int buffet = intent.getIntExtra("buffet", 0);                                             // 食べ放題
+        int parking = intent.getIntExtra("parking", 0);                                           // 飲み放題
+        int smoking = intent.getIntExtra("smoking", 0);                                           // 禁煙席
 
         Log.d("ConditionLunch:", String.valueOf(lunch));
         Log.d("ConditionBottom:" , String.valueOf(bottom));
@@ -110,25 +112,26 @@ public class RestlistActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                // クリックされたデータ呼び出し
+                // リストからクリックされたデータ呼び出し
                 Map<String, Object> data_row = restlist.get(position);
-                // 店舗名(name : Mapのキー)
-                String shop_name = data_row.get("name").toString();
-                String address = data_row.get("address").toString();
-                String tel = data_row.get("tel").toString();
-                String opentime = data_row.get("opentime").toString();
-                String url = data_row.get("url").toString();
-                //String str = (String) ((TextView) view).getText();
-                Toast.makeText(getApplication(), "selected'" + shop_name + "'", Toast.LENGTH_SHORT).show();
+
+                String shop_name = data_row.get("name").toString();                                // 店舗名(name : Mapのキー)
+                String address = data_row.get("address").toString();                              // 住所
+                String tel = data_row.get("tel").toString();                                       // 電話番号
+                String opentime = data_row.get("opentime").toString();                            // 営業時間
+                String url = data_row.get("url").toString();                                       // URL
+                String image_url = data_row.get("image_url").toString();                          // 店舗画像URL
+                //Toast.makeText(getApplication(), "selected'" + shop_name + "'", Toast.LENGTH_SHORT).show();
 
                 // 押された項目を次の画面に渡す
                 Intent intent = new Intent(RestlistActivity.this, RestaurantActivity.class);
-                // 店舗名(shop_name : キー設定名)
-                intent.putExtra("shop_name", shop_name);
-                intent.putExtra("address", address);
-                intent.putExtra("tel", tel);
-                intent.putExtra("opentime", opentime);
-                intent.putExtra("url", url);
+
+                intent.putExtra("shop_name", shop_name);                                          // 店舗名(shop_name  = キー設定名)
+                intent.putExtra("address", address);                                              // 住所
+                intent.putExtra("tel", tel);                                                       // 電話番号
+                intent.putExtra("opentime", opentime);                                            // 営業時間
+                intent.putExtra("url", url);                                                       // URL
+                intent.putExtra("image_url", image_url);                                          // 店舗画像URL
                 startActivity(intent);
             }
         });

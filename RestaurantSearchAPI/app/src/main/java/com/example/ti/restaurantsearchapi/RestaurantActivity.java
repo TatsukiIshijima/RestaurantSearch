@@ -10,6 +10,8 @@ import android.text.util.Linkify;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+/* レストラン詳細画面 */
+
 public class RestaurantActivity extends AppCompatActivity {
 
     @Override
@@ -19,17 +21,20 @@ public class RestaurantActivity extends AppCompatActivity {
 
         // 値を受け取る
         Intent intent = getIntent();
-        String shop_name = intent.getStringExtra("shop_name");
-        String address = intent.getStringExtra("address");
-        String tel = intent.getStringExtra("tel");
-        String opentime = intent.getStringExtra("opentime");
-        String url = intent.getStringExtra("url");
+        String shop_name = intent.getStringExtra("shop_name");                                    // 店舗名
+        String address = intent.getStringExtra("address");                                        // 住所
+        String tel = intent.getStringExtra("tel");                                                 // 電話番号
+        String opentime = intent.getStringExtra("opentime");                                      // 営業時間
+        String url = intent.getStringExtra("url");                                                 // URL
+        String image_url = intent.getStringExtra("image_url");                                    // 画像URL
 
         TextView shop_name_text = (TextView) findViewById(R.id.shop_name);
         TextView address_text = (TextView) findViewById(R.id.address);
         TextView tel_text = (TextView) findViewById(R.id.tel);
         TextView opentime_text = (TextView) findViewById(R.id.opentime);
         TextView url_text = (TextView) findViewById(R.id.url);
+        // 画像URLの存在を確認するため
+        //TextView image_url_text = (TextView) findViewById(R.id.image_url);
 
         // リンク設定(住所、電話番号)
         address_text.setAutoLinkMask(Linkify.MAP_ADDRESSES);
@@ -42,12 +47,24 @@ public class RestaurantActivity extends AppCompatActivity {
         tel_text.setText("TEL : " + tel);
         opentime_text.setText("営業時間 : " + opentime);
         url_text.setText("URL : " + url);
+        //image_url_text.setText("画像 : " + image_url);
 
         ImageView imageView = (ImageView) findViewById(R.id.shop_image);
-        Resources res = getResources();
-        Bitmap bitmap1 = BitmapFactory.decodeResource(res, R.drawable.no_image);
-        // 画像を縮小する
-        Bitmap bitmap2 = Bitmap.createScaledBitmap(bitmap1, 300, 225, false);
-        imageView.setImageBitmap(bitmap2);
+
+        // 画像URLが存在するとき
+        if (!image_url.equals("")) {
+            // 画像のダウンロード
+            DownloadImageTask task = new DownloadImageTask(imageView);
+            task.execute(image_url);
+
+        // 画像URLが存在しないとき
+        // NoImage画像表示
+        } else {
+            Resources res = getResources();
+            Bitmap bitmap1 = BitmapFactory.decodeResource(res, R.drawable.no_image);
+            // 画像のサイズ変更する
+            Bitmap bitmap2 = Bitmap.createScaledBitmap(bitmap1, 300, 225, false);
+            imageView.setImageBitmap(bitmap2);
+        }
     }
 }

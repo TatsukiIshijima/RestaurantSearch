@@ -27,6 +27,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/* レストラン検索画面 */
+
 public class MainActivity extends AppCompatActivity implements LocationListener{
     private LocationManager mLocationManager;
     private List<Map<String, String>> mList;                                                      // 絞り込み条件リスト
