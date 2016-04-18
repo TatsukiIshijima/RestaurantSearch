@@ -39,7 +39,7 @@ public class RestaurantActivity extends AppCompatActivity {
         // 値を受け取る
         final Intent intent = getIntent();
         String shop_name = intent.getStringExtra("shop_name");                                    // 店舗名
-        final String address =   intent.getStringExtra("address");                                        // 住所
+        final String address = intent.getStringExtra("address");                                 // 住所
         String tel = intent.getStringExtra("tel");                                                 // 電話番号
         String opentime = intent.getStringExtra("opentime");                                      // 営業時間
         String url = intent.getStringExtra("url");                                                 // URL
@@ -59,7 +59,6 @@ public class RestaurantActivity extends AppCompatActivity {
         url_text.setAutoLinkMask(Linkify.WEB_URLS);
 
         // リンク設定(住所)
-        String addressLink = "住所 : " + address;
         SparseArray<String> maplinks = new SparseArray<String>();
         // リンクにする文字列の設定
         maplinks.append(0, address);
@@ -83,11 +82,11 @@ public class RestaurantActivity extends AppCompatActivity {
         // 値をセット
         shop_name_text.setText(shop_name);
         //address_text.setText("住所 : " + address);
-        address_text.setText(TextLinker.getLinkableText(addressLink, maplinks, listener));
+        address_text.setText(TextLinker.getLinkableText(address, maplinks, listener));
         address_text.setMovementMethod(LinkMovementMethod.getInstance());
-        tel_text.setText("TEL : " + tel);
-        opentime_text.setText("営業時間 : " + opentime);
-        url_text.setText("URL : " + url);
+        tel_text.setText(tel);
+        opentime_text.setText(opentime);
+        url_text.setText(url);
         //image_url_text.setText("画像 : " + image_url);
 
         ImageView imageView = (ImageView) findViewById(R.id.shop_image);
