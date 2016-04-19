@@ -1,11 +1,15 @@
 package com.example.ti.restaurantsearchapi;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,6 +25,7 @@ import android.widget.SeekBar;
 import android.widget.SimpleAdapter;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,10 +34,12 @@ import java.util.Map;
 
 /* レストラン検索画面 */
 
-public class MainActivity extends AppCompatActivity implements LocationListener{
+public class MainActivity extends AppCompatActivity implements LocationListener {
     private LocationManager mLocationManager;
+    private String latitude;
+    private String longitude;
     private List<Map<String, String>> mList;                                                      // 絞り込み条件リスト
-    private final String[] item = new String[] {
+    private final String[] item = new String[]{
             "ランチ営業",
             "飲み放題",
             "食べ放題",
@@ -60,9 +67,18 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         final Activity activity = this;
 
         // GPSで現在地取得
-        //mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        //boolean gpsFlg = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        //Log.d("GPS Enabled", gpsFlg? "OK":"NG");
+        mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+        // GPSがONになっているか確認
+        //String providers = Settings.Secure.getString(getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+        //if (!mLocationManager.isProviderEnabled(LOCATION_SERVICE)) {
+        //    Toast.makeText(getApplicationContext(), "GPSがOFFになっています。", Toast.LENGTH_LONG).show();
+        //} else {
+
+        //}
+        //Toast.makeText(getApplicationContext(), "現在地取得中・・・", Toast.LENGTH_SHORT).show();
+        checkGPS();
+        //Toast.makeText(getApplicationContext(), "現在地を取得しました。", Toast.LENGTH_SHORT).show();
 
         final TextView rangeText = (TextView) findViewById(R.id.rangeText);
         SeekBar seekBar = (SeekBar) findViewById(R.id.rangeSeekbar);
@@ -90,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         listView.setAdapter(adapter);
 
         // 表示するデータ設定
-        for (int i=0; i<5; i++) {
+        for (int i = 0; i < 5; i++) {
             Map<String, String> map = new HashMap<>();
             map.put("title", item[i]);
             mList.add(map);
@@ -109,10 +125,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                 Intent intent = new Intent(activity, RestlistActivity.class);
 
                 Log.d("ConditionLunch:", String.valueOf(lunch_val));
-                Log.d("ConditionBottom:" , String.valueOf(bottom_val));
-                Log.d("ConditionBuffet:" , String.valueOf(buffet_val));
-                Log.d("ConditionParking:" , String.valueOf(parking_val));
-                Log.d("ConditionSmoking:" , String.valueOf(no_smoking_val));
+                Log.d("ConditionBottom:", String.valueOf(bottom_val));
+                Log.d("ConditionBuffet:", String.valueOf(buffet_val));
+                Log.d("ConditionParking:", String.valueOf(parking_val));
+                Log.d("ConditionSmoking:", String.valueOf(no_smoking_val));
 
                 // 検索ワードを次の画面へ渡す
                 intent.putExtra("FreeWord", freeword);
@@ -122,6 +138,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
                 intent.putExtra("buffet", buffet_val);
                 intent.putExtra("parking", parking_val);
                 intent.putExtra("smoking", no_smoking_val);
+
+                // 位置情報を次の画面へ渡す
+                intent.putExtra("lat", latitude);
+                intent.putExtra("lon", longitude);
                 activity.startActivity(intent);
             }
         });
@@ -160,22 +180,62 @@ public class MainActivity extends AppCompatActivity implements LocationListener{
         });
     }
 
+    public void checkGPS() {
+        if (mLocationManager != null) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            // プロバイダ名, 最短更新時間(ms), 更新移動距離(m)
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000, 3, this);
+        }
+    }
+
+    // 位置が変更された時のイベントで呼び出される
     @Override
     public void onLocationChanged(Location location) {
+        double lat = location.getLatitude();                                                       // 緯度
+        double lon = location.getLongitude();                                                      // 経度
+        latitude = String.valueOf(lat);
+        longitude = String.valueOf(lon);
+        Log.e("Location lat", String.valueOf(lat));
+        Log.e("Location lon", String.valueOf(lon));
+        //Toast.makeText(getApplicationContext(), "lat:" + latitude + " lon:" + longitude, Toast.LENGTH_SHORT).show();
+        //if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+        //    return;
+        //}
+        //mLocationManager.removeUpdates(this);
     }
 
+    // GPSを取得するのに利用しているプロバイダのステータス変更時のイベントで呼び出される
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
-
+        Log.i("INFO", "Status changed...");
     }
 
+    // プロバイダが利用可能な状態になったとき呼び出される
     @Override
     public void onProviderEnabled(String provider) {
+        Log.i("INFO", "Provider enable...");
     }
 
+    // プロバイダが利用不可な状態になったときに呼び出される
     @Override
     public void onProviderDisabled(String provider) {
-
+        Log.i("INFO","Provider disable...");
     }
 
     // 絞り込み条件のためのアダプター

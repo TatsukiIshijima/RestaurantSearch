@@ -93,6 +93,18 @@ public class RestlistActivity extends AppCompatActivity {
         int parking = intent.getIntExtra("parking", 0);                                           // 飲み放題
         int smoking = intent.getIntExtra("smoking", 0);                                           // 禁煙席
 
+        String latitude = intent.getStringExtra("lat");
+        String longitude = intent.getStringExtra("lon");
+        // 現在地の情報が取れないとき
+        if (latitude == null) {
+            latitude = "";
+        }
+        if (longitude == null) {
+            longitude = "";
+        }
+
+        //Toast.makeText(getApplicationContext(), "latitude:" + latitude + " longitude:" + longitude, Toast.LENGTH_SHORT).show();
+
         Log.d("ConditionLunch:", String.valueOf(lunch));
         Log.d("ConditionBottom:" , String.valueOf(bottom));
         Log.d("ConditionBuffet:" , String.valueOf(buffet));
@@ -117,8 +129,10 @@ public class RestlistActivity extends AppCompatActivity {
 
         progress = (ProgressBar) findViewById(R.id.progress);
         // URLをたたく
-        new ApiTask().execute("35.670082", "139.763267", String.valueOf(range_number), freeword,
-                String.valueOf(lunch), String.valueOf(bottom), String.valueOf(buffet), String.valueOf(parking), String.valueOf(smoking));
+        //new ApiTask().execute("35.670082", "139.763267", String.valueOf(range_number), freeword,
+        //        String.valueOf(lunch), String.valueOf(bottom), String.valueOf(buffet), String.valueOf(parking), String.valueOf(smoking));
+        new ApiTask().execute(latitude, longitude, String.valueOf(range_number), freeword,
+                        String.valueOf(lunch), String.valueOf(bottom), String.valueOf(buffet), String.valueOf(parking), String.valueOf(smoking));
 
         // リスト項目がクリックされた時
         restlistview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
