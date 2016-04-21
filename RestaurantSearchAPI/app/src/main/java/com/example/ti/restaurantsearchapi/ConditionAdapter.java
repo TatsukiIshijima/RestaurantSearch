@@ -47,16 +47,6 @@ public class ConditionAdapter extends SimpleAdapter {
                 }
             }
         });
-        /*
-        sw.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AdapterView.OnItemClickListener listener = list.getOnItemClickListener();
-                long id = getItemId(position);
-                listener.onItemClick((AdapterView<?>) parent, v, position, id);
-            }
-        });
-        */
 
         return view;
     }

@@ -8,18 +8,24 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.Image;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseBooleanArray;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.SimpleAdapter;
@@ -36,17 +42,21 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements LocationListener {
     private LocationManager mLocationManager;
+    private InputMethodManager mInputMethodManager;
     private String latitude;
     private String longitude;
+    private List<conditionListItem> mConditionItemList;
+
     private List<Map<String, String>> mList;                                                      // 絞り込み条件リスト
-    private final String[] item = new String[]{
-            "ランチ営業",
-            "飲み放題",
-            "食べ放題",
-            "駐車場",
-            "禁煙席"
+    private final String[] item = new String[]{                                                  // 絞り込み条件項目
+            "現在地", "ランチ営業", "飲み放題", "食べ放題", "駐車場", "禁煙席"
+    };
+    private final int[] item_imageId = new int[] {                                             // 絞り込み条件アイコン
+            R.drawable.location, R.drawable.lunch, R.drawable.bottomless,
+            R.drawable.buffet, R.drawable.parking, R.drawable.no_smoking
     };
     private int range_number;                                                                   // 検索範囲
+    private boolean location;                                                                   // 現在地ON/OFF
     private boolean lunch;                                                                      // 絞り込み条件(ランチ営業)
     private int lunch_val;
     private boolean bottomless;                                                                // 絞り込み条件(飲み放題)
@@ -77,39 +87,37 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
 
         //}
         //Toast.makeText(getApplicationContext(), "現在地取得中・・・", Toast.LENGTH_SHORT).show();
-        checkGPS();
+        //checkGPS();
         //Toast.makeText(getApplicationContext(), "現在地を取得しました。", Toast.LENGTH_SHORT).show();
 
         final TextView rangeText = (TextView) findViewById(R.id.rangeText);
         SeekBar seekBar = (SeekBar) findViewById(R.id.rangeSeekbar);
         final Button button = (Button) findViewById(R.id.search_button);
         final ListView listView = (ListView) findViewById(R.id.detail_list);
+        final EditText editText = (EditText) findViewById(R.id.freeword);
+
+        // キーボード表示を制御するためのオブジェクト
+        mInputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 
         // アダプタ生成
         mList = new ArrayList<>();
         final ConditionAdapter2 adapter = new ConditionAdapter2(this, mList, R.layout.condition_item,
-                new String[]{"title"},
+                new String[]{"title", "image_id"},
                 new int[]{R.id.condition_text},
                 R.id.condition_switch);
 
-        /*
-        // クリックイベント処理
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.d("itemClick", "position=" + String.valueOf(position));
-            }
-        });
-        */
+        // 以下は試し 4/21
+        mConditionItemList = conditionListItem.contentItem();
+        ConditionAdapter3 adapter3 = new ConditionAdapter3(getApplicationContext(), mConditionItemList, R.id.condition_switch);
 
         // アダプターセット
-        listView.setAdapter(adapter);
+        listView.setAdapter(adapter3);
 
-        // 表示するデータ設定
-        for (int i = 0; i < 5; i++) {
-            Map<String, String> map = new HashMap<>();
-            map.put("title", item[i]);
-            mList.add(map);
+        // 表示する絞り込み条件設定
+        for (int i = 0; i < 6; i++) {
+            Map<String, String> str_map = new HashMap<>();
+            str_map.put("title", item[i]);
+            mList.add(str_map);
         }
 
         rangeText.setText("検索範囲 : 周囲 300 m");
@@ -118,7 +126,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EditText editText = (EditText) findViewById(R.id.freeword);
                 String freeword = editText.getText().toString();
 
                 // レストラン一覧画面の起動
@@ -143,6 +150,19 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 intent.putExtra("lat", latitude);
                 intent.putExtra("lon", longitude);
                 activity.startActivity(intent);
+            }
+        });
+
+        // エディットテキストでキーボードのエンターが押された時
+        editText.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    // キーボードを閉じる
+                    mInputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), mInputMethodManager.RESULT_UNCHANGED_SHOWN);
+                    return true;
+                }
+                return false;
             }
         });
 
@@ -180,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         });
     }
 
-    public void checkGPS() {
+    public void onGPS() {
         if (mLocationManager != null) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 // TODO: Consider calling
@@ -194,6 +214,22 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             }
             // プロバイダ名, 最短更新時間(ms), 更新移動距離(m)
             mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000, 3, this);
+        }
+    }
+
+    public void offGPS() {
+        if (mLocationManager != null) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            mLocationManager.removeUpdates(this);
         }
     }
 
@@ -272,9 +308,70 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         }
     }
 
+    // 絞り込み条件のためのアダプター
+    public class ConditionAdapter3 extends ArrayAdapter<conditionListItem> {
+        private int aSwitch;
+        private LayoutInflater mLayoutInflater;
+
+        public ConditionAdapter3(Context context, List<conditionListItem> data, int mSwitch) {
+            super(context, 0, data);
+            mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            aSwitch = mSwitch;
+        }
+
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ViewHolder holder;
+            convertView = mLayoutInflater.inflate(R.layout.condition_item, parent, false);
+            holder = new ViewHolder();
+            holder.conditon_name = (TextView) convertView.findViewById(R.id.condition_text);
+            holder.condition_imageId = (ImageView) convertView.findViewById(R.id.condtion_img);
+            convertView.setTag(position);
+
+            String condition_name = getItem(position).getmTitle();
+            int condition_imageId = getItem(position).getmImageId();
+
+            holder.conditon_name.setText(condition_name);
+            holder.condition_imageId.setImageResource(condition_imageId);
+
+            Switch sw = (Switch) convertView.findViewById(aSwitch);
+            // Tagでpositionの設定
+            sw.setTag(position);
+
+            sw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    int i = (Integer) buttonView.getTag();
+
+                    if (isChecked) {
+                        conditionCheck(i, isChecked);
+                        Log.d("SwitchTest:", "position" + i + "true");
+                    } else {
+                        conditionCheck(i, isChecked);
+                        Log.d("SwitchTest:", "position" + i + "false");
+                    }
+                }
+            });
+            return convertView;
+        }
+
+        private class ViewHolder {
+            TextView conditon_name;
+            ImageView condition_imageId;
+        }
+    }
+
     public void conditionCheck(int i, boolean ischecked) {
         switch (i) {
             case 0:
+                location = ischecked;
+                if (location == true) {
+                    onGPS();
+                } else {
+                    latitude = null;
+                    longitude = null;
+                    offGPS();
+                }
+            case 1:
                 lunch = ischecked;
                 if (lunch == true) {
                     lunch_val = 1;
@@ -282,7 +379,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                     lunch_val = 0;
                 }
                 break;
-            case 1:
+            case 2:
                 bottomless = ischecked;
                 if (bottomless == true) {
                     bottom_val = 1;
@@ -290,7 +387,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                     bottom_val = 0;
                 }
                 break;
-            case 2:
+            case 3:
                 buffet = ischecked;
                 if (buffet == true) {
                     buffet_val = 1;
@@ -298,7 +395,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                     buffet_val = 0;
                 }
                 break;
-            case 3:
+            case 4:
                 parking = ischecked;
                 if (parking == true) {
                     parking_val = 1;
@@ -306,7 +403,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                     parking_val = 0;
                 }
                 break;
-            case 4:
+            case 5:
                 no_smoking = ischecked;
                 if (no_smoking == true) {
                     no_smoking_val = 1;

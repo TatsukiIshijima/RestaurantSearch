@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,81 +11,89 @@
 
     <!-- レストラン詳細画面レイアウト -->
 
-    <TextView
-        android:id="@+id/shop_name"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="24dp"
-        android:textColor="@color/colorAccent"/>
+        android:layout_height="match_parent">
 
-    <ProgressBar
-        android:id="@+id/progress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/shop_name"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="60dp"/>
+        <TextView
+            android:id="@+id/shop_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:textSize="24dp"
+            android:textColor="@color/colorAccent"/>
 
-    <ImageView
-        android:id="@+id/shop_image"
-        android:layout_width="300px"
-        android:layout_height="225px"
-        android:layout_below="@+id/shop_name"
-        android:padding="5dp"
-        android:layout_centerHorizontal="true" />
+        <ProgressBar
+            android:id="@+id/progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/shop_name"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="60dp"/>
 
-    <TableLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/shop_image"
-        android:shrinkColumns="1">
+        <ImageView
+            android:id="@+id/shop_image"
+            android:layout_width="300px"
+            android:layout_height="225px"
+            android:layout_below="@+id/shop_name"
+            android:padding="5dp"
+            android:layout_centerHorizontal="true" />
 
-        <TableRow
-            android:paddingTop="5dp">
-            <TextView
-                android:text="住所  "
-                android:layout_gravity="center_horizontal|center_vertical"/>
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/shop_image"
+            android:shrinkColumns="1">
 
-            <TextView
-                android:id="@+id/address"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </TableRow>
+            <TableRow
+                android:paddingTop="5dp">
+                <TextView
+                    android:text="住所  "
+                    android:layout_gravity="center_horizontal|center_vertical"/>
 
-        <TableRow
-            android:paddingTop="5dp">
-            <TextView
-                android:text="電話番号  "
-                android:layout_gravity="center_horizontal|center_vertical"/>
+                <TextView
+                    android:id="@+id/address"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </TableRow>
 
-            <TextView
-                android:id="@+id/tel"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-        </TableRow>
+            <TableRow
+                android:paddingTop="5dp">
+                <TextView
+                    android:text="電話番号  "
+                    android:layout_gravity="center_horizontal|center_vertical"/>
 
-        <TableRow
-            android:paddingTop="5dp">
-            <TextView
-                android:text="営業時間  "
-                android:layout_gravity="center_horizontal|center_vertical"/>
+                <TextView
+                    android:id="@+id/tel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            </TableRow>
 
-            <TextView
-                android:id="@+id/opentime"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-        </TableRow>
+            <TableRow
+                android:paddingTop="5dp">
+                <TextView
+                    android:text="営業時間  "
+                    android:layout_gravity="center_horizontal|center_vertical"/>
 
-        <TableRow
-            android:paddingTop="5dp">
-            <TextView
-                android:text="URL  "
-                android:layout_gravity="center_horizontal|center_vertical"/>
+                <TextView
+                    android:id="@+id/opentime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            </TableRow>
 
-            <TextView
-                android:id="@+id/url"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-        </TableRow>
-    </TableLayout>
-</RelativeLayout>
+            <TableRow
+                android:paddingTop="5dp">
+                <TextView
+                    android:text="URL  "
+                    android:layout_gravity="center_horizontal|center_vertical"/>
+
+                <TextView
+                    android:id="@+id/url"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            </TableRow>
+        </TableLayout>
+
+    </RelativeLayout>
+
+</ScrollView>
