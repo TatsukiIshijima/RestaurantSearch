@@ -28,6 +28,20 @@ import java.net.URLEncoder;
 public class RestaurantActivity extends AppCompatActivity {
 
     private ProgressBar progressBar;
+    private String shop_name;                                                                    // 店舗名
+    private String address;                                                                      // 住所
+    private String tel;                                                                           // 電話番号
+    private String opentime;                                                                     // 営業時間
+    private String url;                                                                           // 店舗URL
+    private String image_url;                                                                    // 店舗画像URL
+
+    private TextView shop_name_text;
+    private TextView address_text;
+    private TextView tel_text;
+    private TextView opentime_text;
+    private TextView url_text;
+
+    private ImageView imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,20 +52,18 @@ public class RestaurantActivity extends AppCompatActivity {
 
         // 値を受け取る
         final Intent intent = getIntent();
-        String shop_name = intent.getStringExtra("shop_name");                                    // 店舗名
-        final String address = intent.getStringExtra("address");                                 // 住所
-        String tel = intent.getStringExtra("tel");                                                 // 電話番号
-        String opentime = intent.getStringExtra("opentime");                                      // 営業時間
-        String url = intent.getStringExtra("url");                                                 // URL
-        String image_url = intent.getStringExtra("image_url");                                    // 画像URL
+        shop_name = intent.getStringExtra("shop_name");
+        address = intent.getStringExtra("address");                                 // 住所
+        tel = intent.getStringExtra("tel");                                                 // 電話番号
+        opentime = intent.getStringExtra("opentime");                                      // 営業時間
+        url = intent.getStringExtra("url");                                                 // URL
+        image_url = intent.getStringExtra("image_url");                                    // 画像URL
 
-        TextView shop_name_text = (TextView) findViewById(R.id.shop_name);
-        TextView address_text = (TextView) findViewById(R.id.address);
-        TextView tel_text = (TextView) findViewById(R.id.tel);
-        TextView opentime_text = (TextView) findViewById(R.id.opentime);
-        TextView url_text = (TextView) findViewById(R.id.url);
-        // 画像URLの存在を確認するため
-        //TextView image_url_text = (TextView) findViewById(R.id.image_url);
+        shop_name_text = (TextView) findViewById(R.id.shop_name);
+        address_text = (TextView) findViewById(R.id.address);
+        tel_text = (TextView) findViewById(R.id.tel);
+        opentime_text = (TextView) findViewById(R.id.opentime);
+        url_text = (TextView) findViewById(R.id.url);
 
         // リンク設定(電話、URL)
         //address_text.setAutoLinkMask(Linkify.MAP_ADDRESSES);
@@ -89,7 +101,7 @@ public class RestaurantActivity extends AppCompatActivity {
         url_text.setText(url);
         //image_url_text.setText("画像 : " + image_url);
 
-        ImageView imageView = (ImageView) findViewById(R.id.shop_image);
+        imageView = (ImageView) findViewById(R.id.shop_image);
 
         // 画像URLが存在するとき
         if (!image_url.equals("")) {

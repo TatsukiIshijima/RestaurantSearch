@@ -30,13 +30,17 @@ import java.util.Objects;
 
 public class RestlistActivity extends AppCompatActivity {
 
-    private TextView total_hit_count;
-    private ListView  restlistview;
-    private ProgressBar progress;
-
-    // 店リスト
-    ArrayList<Map<String, Object>> restlist = new ArrayList<Map<String, Object>>();
-    //SimpleAdapter adapter;
+    private TextView total_hit_count;                                                            // 検索ヒット数
+    private ListView  restlistview;                                                              // レストラン一覧のリストビュー
+    private ProgressBar progress;                                                                 // プログレスバー
+    private ArrayList<Map<String, Object>> restlist = new ArrayList<Map<String, Object>>();      // 店リスト
+    private String freeword;                                                                     // 検索ワード
+    private int range_number;                                                                   // 検索範囲
+    private int lunch;                                                                           // ランチ
+    private int bottom;                                                                          // 飲み放題
+    private int buffet;                                                                          // 食べ放題
+    private int parking;                                                                         // 駐車場
+    private int no_smoking;                                                                     // 禁煙席
 
     public class ApiTask extends GetRestaurantTask {
 
@@ -85,13 +89,13 @@ public class RestlistActivity extends AppCompatActivity {
         restlistview = (ListView) this.findViewById(R.id.listView);
         // 値を受け取る
         Intent intent = getIntent();
-        String freeword = intent.getStringExtra("FreeWord");                                      // 検索ワード 範囲を受け取る
-        int range_number = intent.getIntExtra("range", 1);                                        // 検索範囲
-        int lunch = intent.getIntExtra("lunch", 0);                                               // ランチ営業
-        int bottom = intent.getIntExtra("bottom", 0);                                             // 飲み放題
-        int buffet = intent.getIntExtra("buffet", 0);                                             // 食べ放題
-        int parking = intent.getIntExtra("parking", 0);                                           // 飲み放題
-        int smoking = intent.getIntExtra("smoking", 0);                                           // 禁煙席
+        freeword = intent.getStringExtra("FreeWord");                                      // 検索ワード 範囲を受け取る
+        range_number = intent.getIntExtra("range", 1);                                        // 検索範囲
+        lunch = intent.getIntExtra("lunch", 0);                                               // ランチ営業
+        bottom = intent.getIntExtra("bottom", 0);                                             // 飲み放題
+        buffet = intent.getIntExtra("buffet", 0);                                             // 食べ放題
+        parking = intent.getIntExtra("parking", 0);                                           // 飲み放題
+        no_smoking = intent.getIntExtra("smoking", 0);                                           // 禁煙席
 
         String latitude = intent.getStringExtra("lat");
         String longitude = intent.getStringExtra("lon");
@@ -104,35 +108,26 @@ public class RestlistActivity extends AppCompatActivity {
         }
 
         //Toast.makeText(getApplicationContext(), "latitude:" + latitude + " longitude:" + longitude, Toast.LENGTH_SHORT).show();
-
         Log.d("ConditionLunch:", String.valueOf(lunch));
         Log.d("ConditionBottom:" , String.valueOf(bottom));
         Log.d("ConditionBuffet:" , String.valueOf(buffet));
         Log.d("ConditionParking:" , String.valueOf(parking));
-        Log.d("ConditionSmoking:" , String.valueOf(smoking));
+        Log.d("ConditionSmoking:" , String.valueOf(no_smoking));
 
         // 検索ワードの全角コンマを半角コンマへ変換
         //freeword.replaceAll("，", ",");
         //freeword.replaceAll("、", " ");
         //Toast.makeText(getApplication(), "FreeWord'" + freeword + "'", Toast.LENGTH_SHORT).show();
 
-        // アダプター生成
-        //SimpleAdapter adapter = new SimpleAdapter(this, restlist, R.layout.restlist_item,
-        //        new String[] {"name", "access"},
-        //        new int[] {R.id.restName, R.id.restAccess});
         // 画像つきアダプター生成
-        ImageListAdapter Imgadapter = new ImageListAdapter(this, restlist, R.layout.restlist_item,
-                new String[] {},
-                new int[] {});
+        ImageListAdapter Imgadapter = new ImageListAdapter(this, restlist, R.layout.restlist_item, new String[] {}, new int[] {});
         // アダプターセット
         restlistview.setAdapter(Imgadapter);
 
         progress = (ProgressBar) findViewById(R.id.progress);
         // URLをたたく
-        //new ApiTask().execute("35.670082", "139.763267", String.valueOf(range_number), freeword,
-        //        String.valueOf(lunch), String.valueOf(bottom), String.valueOf(buffet), String.valueOf(parking), String.valueOf(smoking));
         new ApiTask().execute(latitude, longitude, String.valueOf(range_number), freeword,
-                        String.valueOf(lunch), String.valueOf(bottom), String.valueOf(buffet), String.valueOf(parking), String.valueOf(smoking));
+                        String.valueOf(lunch), String.valueOf(bottom), String.valueOf(buffet), String.valueOf(parking), String.valueOf(no_smoking));
 
         // リスト項目がクリックされた時
         restlistview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -175,7 +170,6 @@ public class RestlistActivity extends AppCompatActivity {
             super(context, data, resource, from, to);
             this.list_data = data;
             this.context = context;
-
             this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
@@ -201,7 +195,7 @@ public class RestlistActivity extends AppCompatActivity {
             if (!img_url.equals("")) {
                 // 画像のダウンロード
                 try {
-                    ListImageDownloadTask task = new ListImageDownloadTask(imageView);
+                    DownloadImageTask task = new DownloadImageTask(imageView);
                     task.execute(img_url);
                 } catch (Exception e) {
                     Log.d("Error:", "画像ダウンロードで例外発生");

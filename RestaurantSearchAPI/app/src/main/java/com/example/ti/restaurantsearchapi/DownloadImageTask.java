@@ -26,6 +26,11 @@ public class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         this.progressBar = progressBar;
     }
 
+    public DownloadImageTask(ImageView imageView) {
+        this.imageView = imageView;
+        this.progressBar = null;
+    }
+
     @Override
     protected Bitmap doInBackground(String... params) {
 
@@ -51,7 +56,9 @@ public class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
             Bitmap bitmap2 = Bitmap.createScaledBitmap(result, 300, 225, false);
             imageView.setImageBitmap(bitmap2);
             imageView.setVisibility(View.VISIBLE);
-            progressBar.setVisibility(View.GONE);
+            if (progressBar != null) {
+                progressBar.setVisibility(View.GONE);
+            }
             Log.d("DownLoadImage:", "画像セット");
         }
     }

@@ -43,18 +43,16 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity implements LocationListener {
     private LocationManager mLocationManager;
     private InputMethodManager mInputMethodManager;
-    private String latitude;
-    private String longitude;
-    private List<conditionListItem> mConditionItemList;
+    private TextView rangeText;                                                                   // 範囲を示すテキスト
+    private SeekBar seekBar;                                                                      // 範囲用のシークバー
+    private Button button;                                                                        // 検索ボタン
+    private EditText editText;                                                                    // フリーワード用テキストボックス
+    private String latitude;                                                                      // 緯度
+    private String longitude;                                                                     // 経度
+    private List<conditionListItem> mConditionItemList;                                         // 絞り込み条件項目リスト
+    private ListView listView;                                                                    // 項目リストのためのリストビュー
 
-    private List<Map<String, String>> mList;                                                      // 絞り込み条件リスト
-    private final String[] item = new String[]{                                                  // 絞り込み条件項目
-            "現在地", "ランチ営業", "飲み放題", "食べ放題", "駐車場", "禁煙席"
-    };
-    private final int[] item_imageId = new int[] {                                             // 絞り込み条件アイコン
-            R.drawable.location, R.drawable.lunch, R.drawable.bottomless,
-            R.drawable.buffet, R.drawable.parking, R.drawable.no_smoking
-    };
+    private String freeword;                                                                      // 検索ワード
     private int range_number;                                                                   // 検索範囲
     private boolean location;                                                                   // 現在地ON/OFF
     private boolean lunch;                                                                      // 絞り込み条件(ランチ営業)
@@ -68,65 +66,38 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     private boolean no_smoking;                                                                 // 絞り込み条件(禁煙席)
     private int no_smoking_val;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         final Activity activity = this;
 
         // GPSで現在地取得
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-
-        // GPSがONになっているか確認
-        //String providers = Settings.Secure.getString(getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
-        //if (!mLocationManager.isProviderEnabled(LOCATION_SERVICE)) {
-        //    Toast.makeText(getApplicationContext(), "GPSがOFFになっています。", Toast.LENGTH_LONG).show();
-        //} else {
-
-        //}
-        //Toast.makeText(getApplicationContext(), "現在地取得中・・・", Toast.LENGTH_SHORT).show();
-        //checkGPS();
-        //Toast.makeText(getApplicationContext(), "現在地を取得しました。", Toast.LENGTH_SHORT).show();
-
-        final TextView rangeText = (TextView) findViewById(R.id.rangeText);
-        SeekBar seekBar = (SeekBar) findViewById(R.id.rangeSeekbar);
-        final Button button = (Button) findViewById(R.id.search_button);
-        final ListView listView = (ListView) findViewById(R.id.detail_list);
-        final EditText editText = (EditText) findViewById(R.id.freeword);
-
         // キーボード表示を制御するためのオブジェクト
         mInputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 
-        // アダプタ生成
-        mList = new ArrayList<>();
-        final ConditionAdapter2 adapter = new ConditionAdapter2(this, mList, R.layout.condition_item,
-                new String[]{"title", "image_id"},
-                new int[]{R.id.condition_text},
-                R.id.condition_switch);
-
-        // 以下は試し 4/21
-        mConditionItemList = conditionListItem.contentItem();
-        ConditionAdapter3 adapter3 = new ConditionAdapter3(getApplicationContext(), mConditionItemList, R.id.condition_switch);
-
-        // アダプターセット
-        listView.setAdapter(adapter3);
-
-        // 表示する絞り込み条件設定
-        for (int i = 0; i < 6; i++) {
-            Map<String, String> str_map = new HashMap<>();
-            str_map.put("title", item[i]);
-            mList.add(str_map);
-        }
+        rangeText = (TextView) findViewById(R.id.rangeText);
+        seekBar = (SeekBar) findViewById(R.id.rangeSeekbar);
+        button = (Button) findViewById(R.id.search_button);
+        listView = (ListView) findViewById(R.id.detail_list);
+        editText = (EditText) findViewById(R.id.freeword);
 
         rangeText.setText("検索範囲 : 周囲 300 m");
+
+        // 絞り込み条件の項目リスト
+        mConditionItemList = conditionListItem.contentItem();
+        // アダプターの設定(項目リスト、レイアウトなど)
+        ConditionAdapter adapter = new ConditionAdapter(getApplicationContext(), mConditionItemList, R.id.condition_switch);
+        // アダプターセット
+        listView.setAdapter(adapter);
 
         // 検索ボタンが押されたとき
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String freeword = editText.getText().toString();
+                // エディットテキストから文字を受け取る
+                freeword = editText.getText().toString();
 
                 // レストラン一覧画面の起動
                 Intent intent = new Intent(activity, RestlistActivity.class);
@@ -189,7 +160,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             // Seekbarに触れたとき
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
             }
 
             // Seekbarから離れたとき
@@ -212,8 +182,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 // for ActivityCompat#requestPermissions for more details.
                 return;
             }
+            Toast.makeText(getApplicationContext(),"現在地取得中...", Toast.LENGTH_SHORT).show();
             // プロバイダ名, 最短更新時間(ms), 更新移動距離(m)
             mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000, 3, this);
+
+            if (latitude != null && longitude != null) {
+                Toast.makeText(getApplicationContext(), "現在地を取得しました。", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -230,6 +205,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 return;
             }
             mLocationManager.removeUpdates(this);
+            latitude = null;
+            longitude = null;
         }
     }
 
@@ -275,45 +252,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     }
 
     // 絞り込み条件のためのアダプター
-    public class ConditionAdapter2 extends SimpleAdapter {
-        private int aSwitch;
-
-        public ConditionAdapter2(Context context, List<? extends Map<String, ?>> data, int resource, String[] from, int[] to, int mSwitch) {
-            super(context, data, resource, from, to);
-            aSwitch = mSwitch;
-        }
-
-        public View getView(final int position, final View convertView, final ViewGroup parent) {
-            View view = super.getView(position, convertView, parent);
-
-            Switch sw = (Switch) view.findViewById(aSwitch);
-            // Tagでpositionの設定
-            sw.setTag(position);
-
-            sw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    int i = (Integer) buttonView.getTag();
-
-                    if (isChecked) {
-                        conditionCheck(i, isChecked);
-                        Log.d("SwitchTest:", "position" + i + "true");
-                    } else {
-                        conditionCheck(i, isChecked);
-                        Log.d("SwitchTest:", "position" + i + "false");
-                    }
-                }
-            });
-            return view;
-        }
-    }
-
-    // 絞り込み条件のためのアダプター
-    public class ConditionAdapter3 extends ArrayAdapter<conditionListItem> {
+    public class ConditionAdapter extends ArrayAdapter<conditionListItem> {
         private int aSwitch;
         private LayoutInflater mLayoutInflater;
 
-        public ConditionAdapter3(Context context, List<conditionListItem> data, int mSwitch) {
+        public ConditionAdapter(Context context, List<conditionListItem> data, int mSwitch) {
             super(context, 0, data);
             mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             aSwitch = mSwitch;
