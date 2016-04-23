@@ -2,7 +2,9 @@ package com.example.ti.restaurantsearchapi;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -83,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         listView = (ListView) findViewById(R.id.detail_list);
         editText = (EditText) findViewById(R.id.freeword);
 
-        rangeText.setText("検索範囲 : 周囲 300 m");
+        rangeText.setText("検索範囲 : 周囲 500 m");
 
         // 絞り込み条件の項目リスト
         mConditionItemList = conditionListItem.contentItem();
@@ -182,31 +184,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 // for ActivityCompat#requestPermissions for more details.
                 return;
             }
-            Toast.makeText(getApplicationContext(),"現在地取得中...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "現在地取得中...", Toast.LENGTH_SHORT).show();
             // プロバイダ名, 最短更新時間(ms), 更新移動距離(m)
             mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000, 3, this);
 
-            if (latitude != null && longitude != null) {
-                Toast.makeText(getApplicationContext(), "現在地を取得しました。", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    public void offGPS() {
-        if (mLocationManager != null) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return;
-            }
-            mLocationManager.removeUpdates(this);
-            latitude = null;
-            longitude = null;
         }
     }
 
@@ -220,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         Log.e("Location lat", String.valueOf(lat));
         Log.e("Location lon", String.valueOf(lon));
         //Toast.makeText(getApplicationContext(), "lat:" + latitude + " lon:" + longitude, Toast.LENGTH_SHORT).show();
-        //if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
@@ -228,9 +209,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
-        //    return;
-        //}
-        //mLocationManager.removeUpdates(this);
+            //    return;
+        }
+        Toast.makeText(getApplicationContext(), "現在地を取得しました。", Toast.LENGTH_SHORT).show();
+        mLocationManager.removeUpdates(this);
     }
 
     // GPSを取得するのに利用しているプロバイダのステータス変更時のイベントで呼び出される
@@ -248,7 +230,25 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
     // プロバイダが利用不可な状態になったときに呼び出される
     @Override
     public void onProviderDisabled(String provider) {
-        Log.i("INFO","Provider disable...");
+        Log.i("INFO", "Provider disable...");
+    }
+
+    @Override
+    public void onPause() {
+        if (mLocationManager != null) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            mLocationManager.removeUpdates(this);
+        }
+        super.onPause();
     }
 
     // 絞り込み条件のためのアダプター
@@ -308,11 +308,16 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             case 0:
                 location = ischecked;
                 if (location == true) {
-                    onGPS();
+                    // GPS設定の確認
+                    boolean gpsEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+                    if (!gpsEnabled) {
+                        LocationPermissionCheck();
+                    } else {
+                        onGPS();
+                    }
                 } else {
                     latitude = null;
                     longitude = null;
-                    offGPS();
                 }
             case 1:
                 lunch = ischecked;
@@ -355,5 +360,26 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                 }
                 break;
         }
+    }
+
+    public void LocationPermissionCheck() {
+        AlertDialog.Builder alertDlg = new AlertDialog.Builder(this);
+        alertDlg.setTitle("位置情報");
+        alertDlg.setMessage("位置情報の取得を許可しますか？");
+        alertDlg.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // 位置情報設定画面へ遷移
+                Intent settingIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivity(settingIntent);
+            }
+        });
+        alertDlg.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        alertDlg.create().show();
     }
 }

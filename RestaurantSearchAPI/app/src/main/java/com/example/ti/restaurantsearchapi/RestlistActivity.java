@@ -90,7 +90,7 @@ public class RestlistActivity extends AppCompatActivity {
         // 値を受け取る
         Intent intent = getIntent();
         freeword = intent.getStringExtra("FreeWord");                                      // 検索ワード 範囲を受け取る
-        range_number = intent.getIntExtra("range", 1);                                        // 検索範囲
+        range_number = intent.getIntExtra("range", 2);                                        // 検索範囲
         lunch = intent.getIntExtra("lunch", 0);                                               // ランチ営業
         bottom = intent.getIntExtra("bottom", 0);                                             // 飲み放題
         buffet = intent.getIntExtra("buffet", 0);                                             // 食べ放題
