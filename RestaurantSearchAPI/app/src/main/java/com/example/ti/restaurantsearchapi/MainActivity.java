@@ -266,59 +266,103 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             ViewHolder holder;
             convertView = mLayoutInflater.inflate(R.layout.condition_item, parent, false);
             holder = new ViewHolder();
-            holder.conditon_name = (TextView) convertView.findViewById(R.id.condition_text);
+            holder.condition_name = (TextView) convertView.findViewById(R.id.condition_text);
             holder.condition_imageId = (ImageView) convertView.findViewById(R.id.condtion_img);
             convertView.setTag(position);
 
             String condition_name = getItem(position).getmTitle();
             int condition_imageId = getItem(position).getmImageId();
 
-            holder.conditon_name.setText(condition_name);
+            holder.condition_name.setText(condition_name);
             holder.condition_imageId.setImageResource(condition_imageId);
 
-            Switch sw = (Switch) convertView.findViewById(aSwitch);
+            final Switch sw = (Switch) convertView.findViewById(aSwitch);
             // Tagでpositionの設定
             sw.setTag(position);
+
+            // 一行ずつ読み込まれるため、ボタンの状態を保持しておく
+            switch (position) {
+                case 0:
+                    if (location == true) {
+                        sw.setChecked(true);
+                    } else {
+                        sw.setChecked(false);
+                    }
+                    break;
+                case 1:
+                    if (lunch == true) {
+                        sw.setChecked(true);
+                    } else {
+                        sw.setChecked(false);
+                    }
+                    break;
+                case 2:
+                    if (bottomless == true) {
+                        sw.setChecked(true);
+                    } else {
+                        sw.setChecked(false);
+                    }
+                    break;
+                case 3:
+                    if (buffet == true) {
+                        sw.setChecked(true);
+                    } else {
+                        sw.setChecked(false);
+                    }
+                    break;
+                case 4:
+                    if (parking == true) {
+                        sw.setChecked(true);
+                    } else {
+                        sw.setChecked(false);
+                    }
+                    break;
+                case 5:
+                    if (no_smoking == true) {
+                        sw.setChecked(true);
+                    } else {
+                        sw.setChecked(false);
+                    }
+                    break;
+            }
 
             sw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     int i = (Integer) buttonView.getTag();
 
-                    if (isChecked) {
-                        conditionCheck(i, isChecked);
-                        Log.d("SwitchTest:", "position" + i + "true");
-                    } else {
-                        conditionCheck(i, isChecked);
-                        Log.d("SwitchTest:", "position" + i + "false");
-                    }
+                    conditionCheck(i, isChecked);
+                    switch (i) {
+                        case 0:
+                            location = isChecked;
+                            if (location == true) {
+                                // GPS設定の確認
+                                boolean gpsEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+                                if (!gpsEnabled) {
+                                    LocationPermissionCheck();
+                                    sw.setChecked(false);
+                                } else {
+                                    onGPS();
+                                }
+                            } else {
+                                latitude = null;
+                                longitude = null;
+                            }
+                        }
+                    Log.d("SwitchTest:", "position" + i + "true");
                 }
             });
             return convertView;
         }
 
         private class ViewHolder {
-            TextView conditon_name;
+            TextView condition_name;
             ImageView condition_imageId;
         }
     }
 
     public void conditionCheck(int i, boolean ischecked) {
         switch (i) {
-            case 0:
-                location = ischecked;
-                if (location == true) {
-                    // GPS設定の確認
-                    boolean gpsEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-                    if (!gpsEnabled) {
-                        LocationPermissionCheck();
-                    } else {
-                        onGPS();
-                    }
-                } else {
-                    latitude = null;
-                    longitude = null;
-                }
             case 1:
                 lunch = ischecked;
                 if (lunch == true) {
