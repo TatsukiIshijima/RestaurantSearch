@@ -187,7 +187,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             Toast.makeText(getApplicationContext(), "現在地取得中...", Toast.LENGTH_SHORT).show();
             // プロバイダ名, 最短更新時間(ms), 更新移動距離(m)
             mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000, 3, this);
-
         }
     }
 
@@ -341,6 +340,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
                                 if (!gpsEnabled) {
                                     LocationPermissionCheck();
                                     sw.setChecked(false);
+                                    location = false;
                                 } else {
                                     onGPS();
                                 }

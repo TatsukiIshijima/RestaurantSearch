@@ -19,7 +19,7 @@ public class GurunabiApi {
     public static RestSearch getRestaurant(String lat, String lon, int range, String freeword,
                                            String lunch, String bottom, String buffet, String parking, String no_smoking) throws IOException ,JSONException {
 
-        String accekey = "***************************";
+        String accekey = "**********************************";
         String format = "json";
         int hit_per_page = 10;
         int offset_page = 1;

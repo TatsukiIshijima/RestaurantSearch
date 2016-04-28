@@ -15,6 +15,7 @@ import java.net.URL;
 
 /**
  * Created by TI on 2016/04/18.
+ * 画像URLから画像をダウンロードするタスク
  */
 public class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
     private ImageView imageView;

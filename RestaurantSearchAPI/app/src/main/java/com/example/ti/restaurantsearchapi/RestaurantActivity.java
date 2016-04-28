@@ -95,13 +95,11 @@ public class RestaurantActivity extends AppCompatActivity {
 
         // 値をセット
         shop_name_text.setText(shop_name);
-        //address_text.setText("住所 : " + address);
         address_text.setText(TextLinker.getLinkableText(address, maplinks, listener));
         address_text.setMovementMethod(LinkMovementMethod.getInstance());
         tel_text.setText(tel);
         opentime_text.setText(opentime);
         url_text.setText(url);
-        //image_url_text.setText("画像 : " + image_url);
 
         imageView = (ImageView) findViewById(R.id.shop_image);
 
